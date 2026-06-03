@@ -1,0 +1,564 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Lato:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&family=Jost:wght@300;400;500&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Lato', Arial, sans-serif;
+    background: #fdf4ef;
+    color: #222;
+    min-height: 100vh;
+    /* espaço para o menu fixo no topo */
+    padding-top: 70px;
+}
+
+/* =====================================================
+   NAVBAR — menu fixo que ocupa toda a largura do topo
+   O botão "☰ Menu" abre um dropdown suspenso com as
+   opções: Cadastro (formulário) e Ver Tabela.
+   Ver Catálogo leva direto ao Card.php.
+===================================================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #5a2d1b;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 16px;
+    z-index: 1000;
+    box-shadow: 0 3px 14px rgba(90, 45, 27, 0.35);
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', Georgia, serif;
+    color: #f9e8db;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    margin-right: auto;
+}
+
+/* ── botão de catálogo (link direto, sem dropdown) ── */
+.nav-link {
+    color: #f9e8db;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 7px 16px;
+    border: 1.5px solid rgba(249, 232, 219, 0.3);
+    border-radius: 7px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.nav-link:hover {
+    background: rgba(249, 232, 219, 0.15);
+    border-color: #f9e8db;
+}
+
+/* ── wrapper do dropdown ── */
+.nav-dropdown {
+    position: relative;
+}
+
+/* ── botão que abre o dropdown (☰ Menu) ── */
+.nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: rgba(249, 232, 219, 0.12);
+    border: 1.5px solid rgba(249, 232, 219, 0.5);
+    border-radius: 7px;
+    color: #f9e8db;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.nav-dropdown-toggle:hover {
+    background: rgba(249, 232, 219, 0.22);
+}
+
+/* seta indicadora */
+.nav-dropdown-toggle::after {
+    content: '▾';
+    font-size: 0.8rem;
+}
+
+/* ── painel suspenso ── */
+.nav-dropdown-menu {
+    display: none;
+    /* escondido por padrão */
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 180px;
+    background: #fff8f4;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(90, 45, 27, 0.22);
+    overflow: hidden;
+    z-index: 2000;
+    border-top: 4px solid #5a2d1b;
+}
+
+/* aberto quando JS adiciona .open */
+.nav-dropdown.open .nav-dropdown-menu {
+    display: block;
+}
+
+.nav-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 13px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #5a2d1b;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.nav-dropdown-item:hover {
+    background: #f9e8db;
+}
+
+.nav-dropdown-item+.nav-dropdown-item {
+    border-top: 1px solid #e8d5c7;
+}
+
+/* =====================================================
+   LAYOUT PRINCIPAL
+===================================================== */
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+h2 {
+    color: #5a2d1b;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.7rem;
+    text-align: center;
+}
+
+/* =====================================================
+   SEÇÕES — controladas pelo JS
+   Por padrão todas ficam ocultas (display:none).
+   JS adiciona .ativa para exibir a seção escolhida.
+   Na carga da página, JS mostra só #secao-form.
+===================================================== */
+.secao {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+}
+
+.secao.ativa {
+    display: flex;
+}
+
+/* =====================================================
+   TABELA
+   overflow-x: auto → scroll horizontal se precisar.
+   A coluna Descrição tem largura definida e permite
+   quebra de linha para mostrar o texto completo sem
+   cortar com "...".
+===================================================== */
+.table-box {
+    width: 100%;
+    background: linear-gradient(160deg, #fdf4ef 0%, #f9e8db 100%);
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 6px 24px rgba(90, 45, 27, 0.18);
+    border-top: 7px solid #5a2d1b;
+    border-bottom: 4px solid #5a2d1b;
+    overflow-x: auto;
+    /* scroll horizontal em telas pequenas */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+}
+
+th {
+    background: #5a2d1b;
+    color: #f9e8db;
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+th+th {
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e8d5c7;
+    vertical-align: top;
+    /* alinha topo para células com texto longo */
+    color: #3a1a0a;
+}
+
+td+td {
+    border-left: 1px solid #e8d5c7;
+}
+
+/* coluna Descrição: texto completo, com quebra de linha */
+td.col-desc {
+    white-space: normal;
+    /* permite quebra */
+    min-width: 180px;
+    /* largura mínima razoável */
+    max-width: 260px;
+    /* não ocupa a tela inteira */
+    line-height: 1.4;
+}
+
+/* colunas curtas ficam compactas */
+td.col-id {
+    width: 36px;
+    text-align: center;
+}
+
+td.col-acao {
+    width: 48px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+td.col-img {
+    width: 52px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+tr:hover td {
+    background: rgba(90, 45, 27, 0.04);
+}
+
+/* botão excluir */
+.btn-excluir {
+    font-size: 1.1rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+}
+
+.btn-excluir:hover {
+    background: #f9d5c8;
+}
+
+/* =====================================================
+   FORMULÁRIO
+===================================================== */
+form {
+    width: 100%;
+    max-width: 500px;
+    background: linear-gradient(160deg, #fdf4ef 0%, #f9e8db 100%);
+    padding: 32px 36px;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(90, 45, 27, 0.18);
+    border-top: 7px solid #5a2d1b;
+}
+
+form h3 {
+    color: #5a2d1b;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+label {
+    display: block;
+    font-weight: 700;
+    color: #5a2d1b;
+    font-size: 0.88rem;
+    margin-bottom: 3px;
+    margin-top: 12px;
+}
+
+label:first-of-type {
+    margin-top: 0;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid #c9a48a;
+    border-radius: 8px;
+    background: #fff8f4;
+    color: #3a1a0a;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #5a2d1b;
+    box-shadow: 0 0 0 3px rgba(90, 45, 27, 0.12);
+    background: #fff;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ── erro por campo (estilo PHP server-side) ── */
+.campo-erro input,
+.campo-erro textarea,
+.campo-erro select {
+    border-color: #b91c1c;
+    background: #fff5f5;
+}
+
+.msg-campo {
+    color: #b91c1c;
+    font-size: 0.80rem;
+    margin-top: 3px;
+    display: none;
+    /* JS mostra apenas os que vieram do PHP */
+}
+
+.msg-campo.visivel {
+    display: block;
+}
+
+/* bloco de erro geral (PHP) */
+.msg-erro-bloco {
+    background: #fef2f2;
+    border: 1.5px solid #fca5a5;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #b91c1c;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    width: 100%;
+    max-width: 500px;
+}
+
+button[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+    padding: 11px;
+    border: none;
+    border-radius: 8px;
+    background: #5a2d1b;
+    color: #fdf4ef;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+button[type="submit"]:hover {
+    background: #7a3d24;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(90, 45, 27, 0.28);
+}
+
+/* =====================================================
+   CARDS (Card.php)
+===================================================== */
+.cards-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.cards-wrapper h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: #5a2d1b;
+    font-size: 2rem;
+    margin-bottom: 32px;
+    letter-spacing: 1px;
+}
+
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+/* flip */
+.card-flip {
+    width: 240px;
+    height: 340px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    /* ALTERADO: 1.3s ease-in-out para virada mais lenta e natural
+       (era 0.80s cubic-bezier). Mude o 1.3s para ajustar a velocidade. */
+    transition: transform 1.3s ease-in-out;
+}
+/* faz o card virar*/
+.card-flip:hover .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(90, 45, 27, 0.22);
+}
+
+.card-front {
+    background: linear-gradient(160deg, #3b1409 0%, #5a2d1b 60%, #7a3d24 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 28px;
+}
+
+.card-front .card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 65%;
+    object-fit: cover;
+    opacity: 0.7;
+}
+
+.card-front .card-info {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.card-front .card-tipo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #f9e8db;
+    letter-spacing: 1px;
+}
+
+.card-front .card-origem {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #d9bfae;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 4px;
+}
+
+.card-front .badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 12px;
+    border: 1px solid rgba(249, 232, 219, 0.4);
+    border-radius: 20px;
+    font-size: 0.68rem;
+    color: #f9e8db;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.card-back {
+    background: linear-gradient(160deg, #fdf4ef 0%, #f9e8db 100%);
+    border-top: 6px solid #5a2d1b;
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    padding: 22px 20px 18px;
+}
+
+.card-back .back-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #5a2d1b;
+    border-bottom: 1px solid #d9bfae;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+}
+
+.card-back .back-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+.card-back .back-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #9a6a50;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.card-back .back-value {
+    font-size: 0.82rem;
+    color: #3a1a0a;
+    text-align: right;
+    word-break: break-word;
+}
+
+.card-back .back-desc {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #d9bfae;
+    font-size: 0.78rem;
+    color: #5a2d1b;
+    font-style: italic;
+    line-height: 1.5;
+    overflow: hidden;
+}
+
+.cards-empty {
+    color: #9a6a50;
+    font-style: italic;
+    font-size: 0.95rem;
+}
